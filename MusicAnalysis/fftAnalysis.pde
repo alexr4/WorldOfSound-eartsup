@@ -91,6 +91,13 @@ class FFTObject
       timer.start();
     }
   }
+  
+  void showDebug()
+  {
+    showDebugLowMedHigh(30, height-60);
+    showFrequencyBands(200, height-60);
+    displayInformations(30, 30);
+  }
 
   void displayInformations(float x_, float y_)
   {

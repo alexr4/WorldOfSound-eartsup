@@ -129,9 +129,7 @@ void draw()
 
   if (debug)
   {
-    fftobj.showDebugLowMedHigh(30, height-60);
-    fftobj.showFrequencyBands(200, height-60);
-    fftobj.displayInformations(30, 30);
+    fftobj.showDebug();
   }
   showFpsOnFrameTitle();
 }
