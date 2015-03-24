@@ -33,99 +33,113 @@ void setup()
 
   int nbBande = 10;
   initMinim("01 - Boards of canada Reach For The Dead.mp3");
-  fftobj = new FFTObject(nbBande, 20);
+  fftobj = new FFTObject(nbBande, 10);
   background(40);
 
   phiRadius = 60;
   thetaRadius = 80;
   omegaRadius = 160;
   etaRadius = 200;
-  
+
   speedGamma = 0.001;
 }
 
 void draw()
 {
   background(40);
-  
-  fftobj.computeAverageLowMedHighLevel();
-  speedPhi = fftobj.getAverageLow();
-  speedTheta = fftobj.getAverageMedium();
-  speedOmega = fftobj.getAverageHigh();
-  
-  gamma += speedGamma;
-  
-  pushMatrix();
-  pushStyle();
-  translate(width/2, height/2);
-  rotate(gamma);
-  colorMode(HSB, 360, 100, 100, 100);
-  noStroke();
-  for (int i=0; i< fftobj.nbDividerBande; i++)
+
+  if (fftobj.isPlaying())
   {
-    float phi = map(i, 0, fftobj.nbDividerBande, 0, TWO_PI);
+    fftobj.computeAverageLowMedHighLevel();
 
-    float nphi = phi+speedPhi/10;
-    float ntheta = phi+speedTheta/20;
-    float nomega = phi+speedOmega;
-    float leveli = fftobj.getFFTLevel(i);
-   
+    speedPhi = fftobj.getAverageLow();
+    speedTheta = fftobj.getAverageMedium();
+    speedOmega = fftobj.getAverageHigh();
 
-    float x0 = cos(phi-gamma)*phiRadius;
-    float y0 = sin(phi-gamma)*phiRadius;
-    float x1 = cos(phi)*thetaRadius;
-    float y1 = sin(phi)*thetaRadius;
-    float x2 = cos(phi+gamma)*omegaRadius;
-    float y2 = sin(phi+gamma)*omegaRadius;
-    float x3 = cos(phi)*etaRadius;
-    float y3 = sin(phi)*etaRadius;
+    gamma += speedGamma;
 
-    float c0 = map(i, 0, fftobj.nbDividerBande, 100, 200);
-    float c1 = map(i, 0, fftobj.nbDividerBande, 0, 100);
-    float c2 = map(i, 0, fftobj.nbDividerBande, 200, 360);
-    float c3 = map(i, 0, fftobj.nbDividerBande, 1, 360);
-    c0 += speedPhi*1.5;
-    c1 += speedTheta*1.5;
-    c2 += speedOmega*1.5;
-    c3 += leveli;
-
-    //Low
     pushMatrix();
-    rectMode(CENTER);
-    translate(x0, y0);
-    rotate(nphi-gamma);
-    fill(c0, 100, 100);
-    rect(0, 0, speedPhi, 2);
-    popMatrix();
+    pushStyle();
+    translate(width/2, height/2);
+    rotate(gamma);
+    colorMode(HSB, 360, 100, 100, 100);
+    noStroke();
+    for (int i=0; i< fftobj.nbDividerBande; i++)
+    {
+      float phi = map(i, 0, fftobj.nbDividerBande, 0, TWO_PI);
 
-    //Medium
-    pushMatrix();
-    rectMode(CORNER);
-    translate(x1, y1);
-    rotate(ntheta);
-    fill(c1, 100, 100);
-    rect(0, 0, speedTheta*25, speedTheta);
-    popMatrix();
+      float nphi = phi+speedPhi/10;
+      float ntheta = phi+speedTheta/20;
+      float nomega = phi+speedOmega;
+      float leveli = fftobj.getFFTLevel(i);
 
-    //High
-    pushMatrix();
-    rectMode(CENTER);
-    translate(x2, y2);
-    rotate(phi+gamma);
-    fill(c2, 100, 100);
-    rect(0, 0, speedOmega*100, 2);
-    popMatrix();
-    
-    //fft
-    pushMatrix();
-    translate(x3, y3);
-    rotate(phi);
-    fill(c3, 100, 100);
-    rect(0, 0, leveli, 2);
+
+      float x0 = cos(phi-gamma)*phiRadius;
+      float y0 = sin(phi-gamma)*phiRadius;
+      float x1 = cos(phi)*thetaRadius;
+      float y1 = sin(phi)*thetaRadius;
+      float x2 = cos(phi+gamma)*omegaRadius;
+      float y2 = sin(phi+gamma)*omegaRadius;
+      float x3 = cos(phi)*etaRadius;
+      float y3 = sin(phi)*etaRadius;
+
+      float c0 = map(i, 0, fftobj.nbDividerBande, 100, 200);
+      float c1 = map(i, 0, fftobj.nbDividerBande, 0, 100);
+      float c2 = map(i, 0, fftobj.nbDividerBande, 200, 360);
+      float c3 = map(i, 0, fftobj.nbDividerBande, 1, 360);
+      c0 += speedPhi*1.5;
+      c1 += speedTheta*1.5;
+      c2 += speedOmega*1.5;
+      c3 += leveli;
+
+      //Low
+      pushMatrix();
+      rectMode(CENTER);
+      translate(x0, y0);
+      rotate(nphi-gamma);
+      fill(c0, 100, 100);
+      rect(0, 0, speedPhi, 2);
+      popMatrix();
+
+      //Medium
+      pushMatrix();
+      rectMode(CORNER);
+      translate(x1, y1);
+      rotate(ntheta);
+      fill(c1, 100, 100);
+      rect(0, 0, speedTheta*25, speedTheta);
+      popMatrix();
+
+      //High
+      pushMatrix();
+      rectMode(CENTER);
+      translate(x2, y2);
+      rotate(phi+gamma);
+      fill(c2, 100, 100);
+      rect(0, 0, speedOmega*100, 2);
+      popMatrix();
+
+      //fft
+      pushMatrix();
+      translate(x3, y3);
+      rotate(phi);
+      fill(c3, 100, 100);
+      rect(0, 0, leveli, 2);
+      popMatrix();
+    }
+    popStyle();
     popMatrix();
   }
-  popStyle();
-  popMatrix();
+  else
+  {
+    pushStyle();
+    fill(127);
+    noStroke();
+    textSize(12);
+    textAlign(LEFT, CENTER);
+    text("Press 'p' to play/pause music\nPress 's' to stop music\nPress 'd' to show music analysis debug\n\nMusic : "+fftobj.getTitle()+"\nFrom : "+fftobj.getAuthor(), 40, height/2);
+    popStyle();
+  }
 
   if (debug)
   {

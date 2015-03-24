@@ -52,7 +52,7 @@ class FFTObject
     yi = 15;
 
 
-    countDown= 10;
+    countDown= floor(1000/25);
     timer = new Timer(countDown);
   }
 
@@ -259,7 +259,7 @@ class FFTObject
 
   float getLow()
   {
-    return fftobj.getAverageFreqOn(0, 269, step);
+    return fftobj.getAverageFreqOn(40, 269, step);
   }
 
   float getMedium()
