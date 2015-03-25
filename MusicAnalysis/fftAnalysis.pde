@@ -39,9 +39,10 @@ class FFTObject
   Timer timer;  
   int countDown;
   float averageLow, averageMedium, averageHigh;
+  float averageSubBass, averageBass, averageMidRange, averageHighMid, averageHighs; 
 
   //constructeur
-  FFTObject(int nbDividerBande_, float step_)
+  FFTObject(int nbDividerBande_, float step_, float fps)
   {
     fft = new FFT( music.bufferSize(), music.sampleRate() );
     specSize =  fft.specSize();
@@ -52,7 +53,7 @@ class FFTObject
     yi = 15;
 
 
-    countDown= floor(1000/25);
+    countDown= floor(1000/fps);
     timer = new Timer(countDown);
   }
 
@@ -87,21 +88,34 @@ class FFTObject
       averageLow = getLow();
       averageMedium = getMedium();
       averageHigh = getHigh();
-      
+
+      //getAverageFreqOn(Frequence de départ, fréquence d'arrivée, Pas, Seuil minimum);
+      averageSubBass = getAverageFreqOn(0, 10000, 1000, 0.0);
+      averageBass = getAverageFreqOn(0, 10000, 1000, 0.0);
+      averageMidRange = getAverageFreqOn(0, 10000, 1000, 0.0);
+      averageHighMid =getAverageFreqOn(0, 10000, 1000, 0.0);
+      averageHighs =  getAverageFreqOn(0, 10000, 1000, 0.0);
+
       timer.start();
     }
   }
-  
+
   void showDebug()
   {
-    showDebugLowMedHigh(30, height-60);
-    showFrequencyBands(200, height-60);
+    float resFreq = 10;
+    float res = 50;
+    float margin = 10;
+
+    showDebugLowMedHigh(30, height-100, 50, 10);
+    showFrequencyBands(30+(margin + res)*3, height-100, resFreq);
+    showDebugFiveRangeAnalysis(30+(margin + res)*3+(resFreq * nbDividerBande)+10, height-100, res, 10);
     displayInformations(30, 30);
   }
 
   void displayInformations(float x_, float y_)
   {
     float y = y_;
+
 
     fill(127);
     text("File Name: " + getFilename(), x_, y);
@@ -122,11 +136,10 @@ class FFTObject
     text("Music playback : "+getPosition()/1000+" / "+getMusicLength()/1000, x_, y+=yi);
   }
 
-  void showFrequencyBands(float x, float y)
+  void showFrequencyBands(float x, float y, float res)
   {
     if (isPlaying())
     {
-      float res = 10;
       noFill();
       beginShape();
       fill(255, 50);
@@ -171,11 +184,10 @@ class FFTObject
     }
   }
 
-  void showDebugLowMedHigh(float x, float y)
+  void showDebugLowMedHigh(float x, float y, float res, float margin)
   {
     if (isPlaying())
     {
-      float res = 50;
 
 
       pushStyle();
@@ -184,21 +196,27 @@ class FFTObject
 
       for (int i =0; i<3; i++)
       {
-        float xi = x+i*res;
+        float xi = x+i*(res+margin);
         float yi = y;
 
         if (i%3 == 0)
         {
           fill(255, 0, 0);
           yi += averageLow;
+          text("Low", x, y+15);     
+          text(averageLow, xi, y-averageLow-10);
         } else if (i%3 == 1)
         {
           fill(0, 255, 0);
           yi += averageMedium;
+          text("Medium", xi, y+15);
+          text(averageMedium, xi, y-averageMedium-10);
         } else if (i%3 ==2)
         {
           fill(0, 0, 255);
           yi += averageHigh;
+          text("High", xi, y+15);
+          text(averageHigh, xi, y-averageHigh-10);
         }
         rect(xi, y, res, y-yi);
       }
@@ -206,20 +224,63 @@ class FFTObject
 
       //debugText
       fill(255);
-      text("averages sampled\non "+countDown+" milliseconds", x, y+30);
-      fill(255, 0, 0);
-      text("Low", x, y+15);     
-      text(averageLow, x, y-averageLow-10);
-      fill(0, 255, 0);
-      text("Medium", x+res, y+15);
-      text(averageMedium, x+res, y-averageMedium-10);
-      fill(0, 0, 255);
-      text("High", x+res*2, y+15);
-      text(averageHigh, x+res*2, y-averageHigh-10);
+      text("averages sampled\non "+countDown+" milliseconds", x, y+40);
     }
   }
 
+  void showDebugFiveRangeAnalysis(float x, float y, float res, float margin)
+  {
+    if (isPlaying())
+    {
+      pushStyle();
+      noStroke();
+      rectMode(CORNER);
 
+      for (int i =0; i<5; i++)
+      {
+        float xi = x+i*(res+margin);
+        float yi = y;
+        //averageSubBass, averageBass, averageMidRange, averageHighMid, averageHighs
+        if (i%5 == 0)
+        {
+          fill(255, 0, 0);
+          yi += averageSubBass;
+          text("SubBass", xi, y+15);     
+          text(averageSubBass, xi, y-averageSubBass-10);
+        } else if (i%5 == 1)
+        {
+          fill(255, 255, 0);
+          yi += averageBass;
+          text("Bass", xi, y+15);     
+          text(averageBass, xi, y-averageBass-10);
+        } else if (i%5 ==2)
+        {
+          fill(0, 255, 0);
+          yi += averageMidRange;
+          text("MidRange", xi, y+15);     
+          text(averageMidRange, xi, y-averageMidRange-10);
+        } else if (i%5 ==3)
+        {
+          fill(0, 255, 255);
+          yi += averageHighMid;
+          text("HighMid", xi, y+15);     
+          text(averageHighMid, xi, y-averageHighMid-10);
+        } else if (i%5 ==4)
+        {
+          fill(0, 0, 255);
+          yi += averageHighs;
+          text("Highs", xi, y+15);     
+          text(averageHighs, xi, y-averageHighs-10);
+        }
+        rect(xi, y, res, y-yi);
+      }
+      popStyle();
+
+      //debugText
+      fill(255);
+      text("averages sampled\non "+countDown+" milliseconds", x, y+40);
+    }
+  }
 
   boolean isPlaying()
   {
@@ -232,7 +293,7 @@ class FFTObject
     return fft.getFreq(freq);
   }
 
-  float getAverageFreqOn(float start, float end, float step)
+  float getAverageFreqOn(float start, float end, float step, float seuil)
   {
     float average = 0;
     float size = 0;//end-start;
@@ -241,7 +302,7 @@ class FFTObject
     {
       for (float i=start; i < end; i+= step)
       {
-        if (getFreq(i) > 0)
+        if (getFreq(i) > seuil)
         {
           average += getFreq(i);
           size ++;
@@ -259,7 +320,7 @@ class FFTObject
 
   float getLow()
   {
-    return fftobj.getAverageFreqOn(40, 269, step);
+    return fftobj.getAverageFreqOn(40, 269, step, 0.0);
   }
 
   float getMedium()
@@ -267,7 +328,7 @@ class FFTObject
     /* float size = 5000 - 269;
      float newStep = map(step, 0, 269, 0, size);*/
 
-    return getAverageFreqOn(269, 5000, step);
+    return getAverageFreqOn(269, 5000, step, 0.0);
   }
 
   float getHigh()
@@ -275,19 +336,19 @@ class FFTObject
     /*float size = 10000 - 5000;
      float newStep = map(step, 0, 269, 0, size);*/
 
-    return getAverageFreqOn(5000, 10000, step);
+    return getAverageFreqOn(5000, 10000, step, 0.0);
   }
-  
+
   float getAverageLow()
   {
     return averageLow;
   }
-  
+
   float getAverageMedium()
   {
     return averageMedium;
   }
-  
+
   float getAverageHigh()
   {
     return averageHigh;

@@ -4,7 +4,7 @@ int pWidth = 1280;
 int pHeight = 800;
 String appName = "MusicAnalysis";
 String version = "Alpha";
-String subVersion = "0.0.0";
+String subVersion = "0.0.1";
 String frameName;
 
 FFTObject fftobj;
@@ -33,7 +33,7 @@ void setup()
 
   int nbBande = 10;
   initMinim("01 - Boards of canada Reach For The Dead.mp3");
-  fftobj = new FFTObject(nbBande, 10);
+  fftobj = new FFTObject(nbBande, 10, 60);
   background(40);
 
   phiRadius = 60;
