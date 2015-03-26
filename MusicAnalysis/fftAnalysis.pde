@@ -38,8 +38,17 @@ class FFTObject
 
   Timer timer;  
   int countDown;
+  //Global Average
   float averageLow, averageMedium, averageHigh;
+  float startAverageLow, endAverageLow, startAverageMedium, endAverageMedium, startAverageHigh, endAverageHigh;
+
+  //Specific Average
   float averageSubBass, averageBass, averageMidRange, averageHighMid, averageHighs; 
+  float startAverageSubBass, endAverageSubBass, stepAverageSubBass, seuilAverageSubBass;
+  float startAverageBass, endAverageBass, stepAverageBass, seuilAverageBass;
+  float startAverageMidRange, endAverageMidRange, stepAverageMidRange, seuilAverageMidRange;
+  float startAverageHighMid, endAverageHighMid, stepAverageHighMid, seuilAverageHighMid;
+  float startAverageHighs, endAverageHighs, stepAverageHighs, seuilAverageHighs;
 
   //constructeur
   FFTObject(int nbDividerBande_, float step_, float fps)
@@ -52,13 +61,58 @@ class FFTObject
     ys = 25;
     yi = 15;
 
+    initGlobalAverages();
+    initSpecificAverages();
 
     countDown= floor(1000/fps);
     timer = new Timer(countDown);
   }
 
-  //methode
+  //init 
+  void initGlobalAverages()
+  {
+    startAverageLow = 40;
+    endAverageLow = 269;
+    startAverageMedium = 269;
+    endAverageMedium = 5000;
+    startAverageHigh = 5000;
+    endAverageHigh= 10000;
+  }
 
+  void initSpecificAverages()
+  {
+    //SubBass
+    startAverageSubBass = 35;
+    endAverageSubBass = 120;
+    stepAverageSubBass = 5;
+    seuilAverageSubBass = 0.5;
+
+    //Bass
+    startAverageBass = 121;
+    endAverageBass = 350;
+    stepAverageBass = 10;
+    seuilAverageBass = 0.5;
+
+    //MidRange
+    startAverageMidRange = 351;
+    endAverageMidRange = 800;
+    stepAverageMidRange = 50; 
+    seuilAverageMidRange = 0.5;
+
+    //HighMid
+    startAverageHighMid = 801;
+    endAverageHighMid = 2000;
+    stepAverageHighMid = 100;
+    seuilAverageHighMid = 0.5;
+
+    //Highs
+    startAverageHighs = 2001;
+    endAverageHighs = 11000;
+    stepAverageHighs = 750;
+    seuilAverageHighs = 0.5;
+  }
+
+  //methode
   void play()
   {
     music.play();
@@ -90,11 +144,11 @@ class FFTObject
       averageHigh = getHigh();
 
       //getAverageFreqOn(Frequence de départ, fréquence d'arrivée, Pas, Seuil minimum);
-      averageSubBass = getAverageFreqOn(0, 10000, 1000, 0.0);
-      averageBass = getAverageFreqOn(0, 10000, 1000, 0.0);
-      averageMidRange = getAverageFreqOn(0, 10000, 1000, 0.0);
-      averageHighMid =getAverageFreqOn(0, 10000, 1000, 0.0);
-      averageHighs =  getAverageFreqOn(0, 10000, 1000, 0.0);
+      averageSubBass = getAverageFreqOn(startAverageSubBass, endAverageSubBass, stepAverageSubBass, seuilAverageSubBass);
+      averageBass = getAverageFreqOn(startAverageBass, endAverageBass, stepAverageBass, seuilAverageBass);
+      averageMidRange = getAverageFreqOn(startAverageMidRange, endAverageMidRange, stepAverageMidRange, seuilAverageMidRange);
+      averageHighMid =getAverageFreqOn(startAverageHighMid, endAverageHighMid, stepAverageHighMid, seuilAverageHighMid);
+      averageHighs =  getAverageFreqOn(startAverageHighs, endAverageHighs, stepAverageHighs, seuilAverageHighs);
 
       timer.start();
     }
@@ -107,8 +161,8 @@ class FFTObject
     float margin = 10;
 
     showDebugLowMedHigh(30, height-100, 50, 10);
-    showFrequencyBands(30+(margin + res)*3, height-100, resFreq);
-    showDebugFiveRangeAnalysis(30+(margin + res)*3+(resFreq * nbDividerBande)+10, height-100, res, 10);
+    showFrequencyBands(30+(margin + res)*3, height-100, resFreq, 500, 100);
+    showDebugFiveRangeAnalysis(30+(margin + res)*3+500 + 10, height-100, res, 10);
     displayInformations(30, 30);
   }
 
@@ -136,7 +190,7 @@ class FFTObject
     text("Music playback : "+getPosition()/1000+" / "+getMusicLength()/1000, x_, y+=yi);
   }
 
-  void showFrequencyBands(float x, float y, float res)
+  void showFrequencyBands(float x, float y, float res, float widthFreq, float step)
   {
     if (isPlaying())
     {
@@ -145,42 +199,96 @@ class FFTObject
       fill(255, 50);
       stroke(255, 100);
       vertex(x, y);
-      for (int i = 0; i<nbDividerBande; i++)
+       for (int i = 0; i<endAverageHighs; i+=step)
       {
-        float level = getFFTLevel(i);
-        float xi = x+i*res;
-        float yi = y-level;
+        float level = getFreq(i);//getFFTLevel(i);
+        float offset = map(i, 0, endAverageHighs, 0, widthFreq);
+        float hue = map(offset, 0, widthFreq, 0, 360);
+        float xi = x+offset;//i*res;
+        float yi = y-(level*5);
 
         vertex(xi, yi);
       }
-      vertex(x+(res*nbDividerBande), y);
+      vertex(x+widthFreq, y);
       endShape(CLOSE);
 
       pushStyle();
-      colorMode(HSB, nbDividerBande, 1, 1, 1);
-      for (int i = 0; i<nbDividerBande; i++)
+      for (int i = 0; i<endAverageHighs; i+=step)
       {
-        float level = getFFTLevel(i);
-        float xi = x+i*res;
-        float yi = y-level;
-
-        stroke(i, 1, 1);       
+        float level = getFreq(i);//getFFTLevel(i);
+        float offset = map(i, 0, endAverageHighs, 0, widthFreq);
+        float xi = x+offset;//i*res;
+        float yi = y-(level*5);
+        
+        if (i >= startAverageSubBass && i < endAverageSubBass)
+        {
+          stroke(255, 0, 0);
+        } else if (i >= startAverageBass && i < endAverageBass)
+        {
+          stroke(255, 255, 0);
+        } else if (i >= startAverageMidRange && i < endAverageMidRange)
+        {
+          stroke(0, 255, 0);
+        } else if (i >= startAverageHighMid && i < endAverageHighMid)
+        {
+          stroke(0, 255, 255);
+        } else if (i >= startAverageHighs && i < endAverageHighs)
+        {
+          stroke(0, 0, 255);
+        }
+      
         line(xi, yi, xi, y);
+        
       }
       popStyle();
 
-      float r0 = map(269, 0, 10000, 0, x+(res*nbDividerBande));
-      float r1 = map(5000-269, 0, 10000, 0, x+(res*nbDividerBande));
-      float r2 = x+(res*nbDividerBande)-(x+(r1+r0));
-
+      /*AverageLow Ref*/
+      float r0 = map(endAverageLow, 0, endAverageHighs, 0, widthFreq);
+      float r1 = map(endAverageMedium-startAverageMedium, 0, endAverageHighs, 0, widthFreq);
+      float r2 = map(endAverageHigh-startAverageHigh, 0, endAverageHighs, 0, widthFreq);
+      float yGA = y + 5;
       rectMode(CORNER);
       noStroke();
       fill(255, 0, 0);
-      rect(x, y+5, r0, 5);
+      rect(x, yGA, r0, 5);
       fill(0, 255, 0);
-      rect(x+r0, y+5, r1, 5);
+      rect(x+r0, yGA, r1, 5);
       fill(0, 0, 255);
-      rect(x+r0+r1, y+5, r2, 5);
+      rect(x+r0+r1, yGA, r2, 5);
+
+      //debug SpecificAverage
+      float lastRectWidth = 0;
+      float yRect = y+15;
+      noStroke();
+      for (int i = 0; i < 5; i++)
+      {
+        float rectWidth = 0;
+        float xRect = x;
+        if (i%5 == 0)
+        {
+          rectWidth = map(endAverageSubBass, 0, endAverageHighs , 0, widthFreq);
+          fill(255, 0, 0);
+        } else if (i%5 == 1)
+        {
+          rectWidth = map(endAverageBass-startAverageBass, 0, endAverageHighs , 0, widthFreq);
+          fill(255, 255, 0);
+        } else if (i%5 == 2)
+        {
+          rectWidth = map(endAverageMidRange-startAverageMidRange, 0, endAverageHighs, 0, widthFreq);
+          fill(0, 255, 0);
+        } else if (i%5 == 3)
+        {
+          rectWidth = map(endAverageHighMid-startAverageHighMid, 0, endAverageHighs, 0, widthFreq);
+          fill(0, 255, 255);
+        } else if (i%5 == 4)
+        {
+          rectWidth = map(endAverageHighs-startAverageHighs, 0, endAverageHighs, 0, widthFreq);
+          fill(0, 0, 255);
+        }
+        xRect += lastRectWidth;
+        rect(xRect, yRect, rectWidth, 5);
+        lastRectWidth += rectWidth;
+      }
     }
   }
 
@@ -320,23 +428,17 @@ class FFTObject
 
   float getLow()
   {
-    return fftobj.getAverageFreqOn(40, 269, step, 0.0);
+    return fftobj.getAverageFreqOn(startAverageLow, endAverageLow, step, 0.0);
   }
 
   float getMedium()
   {
-    /* float size = 5000 - 269;
-     float newStep = map(step, 0, 269, 0, size);*/
-
-    return getAverageFreqOn(269, 5000, step, 0.0);
+    return getAverageFreqOn(startAverageMedium, endAverageMedium, step, 0.0);
   }
 
   float getHigh()
   {
-    /*float size = 10000 - 5000;
-     float newStep = map(step, 0, 269, 0, size);*/
-
-    return getAverageFreqOn(5000, 10000, step, 0.0);
+    return getAverageFreqOn(startAverageHigh, endAverageHigh, step, 0.0);
   }
 
   float getAverageLow()
