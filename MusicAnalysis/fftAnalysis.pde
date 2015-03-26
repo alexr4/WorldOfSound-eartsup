@@ -51,12 +51,12 @@ class FFTObject
   float startAverageHighs, endAverageHighs, stepAverageHighs, seuilAverageHighs;
 
   //constructeur
-  FFTObject(int nbDividerBande_, float step_, float fps)
+  FFTObject(int nbDividerBande_, float fps)
   {
     fft = new FFT( music.bufferSize(), music.sampleRate() );
     specSize =  fft.specSize();
     nbDividerBande = round(fft.specSize()/nbDividerBande_);
-    step = step_;
+    step = 50;
 
     ys = 25;
     yi = 15;
