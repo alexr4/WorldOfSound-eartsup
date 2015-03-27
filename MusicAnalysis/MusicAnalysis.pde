@@ -25,8 +25,8 @@ void setup()
   appParameter();
 
   int nbBande = 10;
-  initMinim("ALB - Whispers Under the Moonlight.mp3");
-  fftobj = new FFTObject(nbBande, 60);
+  initMinim("01 - Boards of canada Reach For The Dead.mp3");
+  fftobj = new FFTObject(nbBande, 100);
   background(40);
 
 
@@ -76,14 +76,19 @@ void draw()
       PVector highsCoord = getCoord(phi, highsRadius);
       PVector fftCoord = getCoord(phi, fftRadius);
 
-      float subHue = map(i, 0, fftobj.nbDividerBande, 0, dividerHue) + subLevel / 2;
-      float bassHue = map(i, 0, fftobj.nbDividerBande, dividerHue, dividerHue*2) + bassLevel;
-      float midRangeHue = map(i, 0, fftobj.nbDividerBande, dividerHue*2, dividerHue*3) + midRangeLevel;
-      float highMidHue = map(i, 0, fftobj.nbDividerBande, dividerHue*3, dividerHue*4) + highMidLevel;
-      float highsHue = map(i, 0, fftobj.nbDividerBande, dividerHue*4, dividerHue*5) + highsLevel;
-      float fftHue = map(i, 0, fftobj.nbDividerBande, dividerHue*5, dividerHue*6) + fftobj.getFFTLevel(i);
+      float subHue = map(i, 0, fftobj.nbDividerBande, 0, dividerHue);// + subLevel / 2;
+      float bassHue = map(i, 0, fftobj.nbDividerBande, dividerHue, dividerHue*2);// + bassLevel;
+      float midRangeHue = map(i, 0, fftobj.nbDividerBande, dividerHue*2, dividerHue*3);// + midRangeLevel;
+      float highMidHue = map(i, 0, fftobj.nbDividerBande, dividerHue*3, dividerHue*4);// + highMidLevel;
+      float highsHue = map(i, 0, fftobj.nbDividerBande, dividerHue*4, dividerHue*5);// + highsLevel;
+      float fftHue = map(i, 0, fftobj.nbDividerBande, dividerHue*5, dividerHue*6);// + fftobj.getFFTLevel(i);
 
-
+      float margin = 10;
+      float subWidth = subLevel;//constrain(subLevel, 0, 120/2 - margin);
+      float bassWidth = bassLevel;//constrain(bassLevel, 0, 180/2 - 120/2 - margin);
+      float midRangeWidth = midRangeLevel;//constrain(midRangeLevel, 0, 240/2 - 180/2 - margin);
+      float highMidWidth = highMidLevel;//constrain(highMidLevel, 0, 300/2 - 240/2 - margin);
+      float highsWidth = highsLevel;//constrain(highsLevel, 0, 360/2 - 300/2 - margin);
 
       //subBass
       fill(subHue, 100, 100);
@@ -93,7 +98,7 @@ void draw()
       translate(subCoord.x, subCoord.y);
       rotate(phi);
       //fill(c0, 100, 100);
-      rect(0, 0, subLevel, 2);
+      rect(0, 0, subWidth, 2);
       popMatrix();
 
       //bass
@@ -104,7 +109,7 @@ void draw()
       translate(bassCoord.x, bassCoord.y);
       rotate(phi);
       //fill(c0, 100, 100);
-      rect(0, 0, bassLevel, 2);
+      rect(0, 0, bassWidth, 2);
       popMatrix();
 
       //midRange
@@ -115,7 +120,7 @@ void draw()
       translate(midRangeCoord.x, midRangeCoord.y);
       rotate(phi);
       //fill(c0, 100, 100);
-      rect(0, 0, midRangeLevel, 2);
+      rect(0, 0, midRangeWidth, 2);
       popMatrix();
 
       //highmidRange
@@ -126,7 +131,7 @@ void draw()
       translate(highMidCoord.x, highMidCoord.y);
       rotate(phi);
       //fill(c0, 100, 100);
-      rect(0, 0, highMidLevel, 2);
+      rect(0, 0, highsWidth, 2);
       popMatrix();
 
       //highsRange

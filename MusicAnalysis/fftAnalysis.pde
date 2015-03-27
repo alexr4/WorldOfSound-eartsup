@@ -83,33 +83,33 @@ class FFTObject
   {
     //SubBass
     startAverageSubBass = 35;
-    endAverageSubBass = 120;
+    endAverageSubBass = 115;
     stepAverageSubBass = 5;
-    seuilAverageSubBass = 0.5;
+    seuilAverageSubBass = 100;
 
     //Bass
-    startAverageBass = 121;
-    endAverageBass = 350;
+    startAverageBass = 116;
+    endAverageBass = 400;
     stepAverageBass = 10;
-    seuilAverageBass = 0.5;
+    seuilAverageBass = 55;
 
     //MidRange
-    startAverageMidRange = 351;
-    endAverageMidRange = 800;
-    stepAverageMidRange = 50; 
-    seuilAverageMidRange = 0.5;
+    startAverageMidRange = 401;
+    endAverageMidRange = 700;
+    stepAverageMidRange = 35;
+    seuilAverageMidRange = 20;
 
     //HighMid
-    startAverageHighMid = 801;
-    endAverageHighMid = 2000;
-    stepAverageHighMid = 100;
-    seuilAverageHighMid = 0.5;
+    startAverageHighMid = 701;
+    endAverageHighMid = 2500;
+    stepAverageHighMid = 50;
+    seuilAverageHighMid = 10;
 
     //Highs
-    startAverageHighs = 2001;
-    endAverageHighs = 11000;
-    stepAverageHighs = 750;
-    seuilAverageHighs = 0.5;
+    startAverageHighs = 2501;
+    endAverageHighs = 5500;
+    stepAverageHighs = 150;
+    seuilAverageHighs = 3;
   }
 
   //methode
@@ -139,9 +139,9 @@ class FFTObject
   {
     if (timer.isFinished())
     {
-      averageLow = getLow();
+     /* averageLow = getLow();
       averageMedium = getMedium();
-      averageHigh = getHigh();
+      averageHigh = getHigh();*/
 
       //getAverageFreqOn(Frequence de départ, fréquence d'arrivée, Pas, Seuil minimum);
       averageSubBass = getAverageFreqOn(startAverageSubBass, endAverageSubBass, stepAverageSubBass, seuilAverageSubBass);
