@@ -51,11 +51,11 @@ class FFTObject
   float startAverageHighs, endAverageHighs, stepAverageHighs, seuilAverageHighs;
 
   //constructeur
-  FFTObject(int nbDividerBande_, float fps)
+  FFTObject(float fps)
   {
     fft = new FFT( music.bufferSize(), music.sampleRate() );
     specSize =  fft.specSize();
-    nbDividerBande = round(fft.specSize()/nbDividerBande_);
+    nbDividerBande = round(fft.specSize()/10);
     step = 50;
 
     ys = 25;
@@ -156,14 +156,15 @@ class FFTObject
 
   void showDebug()
   {
+    float startX = 30;
     float resFreq = 10;
     float res = 50;
     float margin = 10;
 
-    showDebugLowMedHigh(30, height-100, 50, 10);
-    showFrequencyBands(30+(margin + res)*3, height-100, resFreq, 500, 100);
-    showDebugFiveRangeAnalysis(30+(margin + res)*3+500 + 10, height-100, res, 10);
-    displayInformations(30, 30);
+    //showDebugLowMedHigh(startX, height-100, 50, 10);
+    showFrequencyBands(startX, height-100, resFreq, 500, 100);
+    showDebugFiveRangeAnalysis(startX+500 + 10, height-100, res, 10);
+    displayInformations(startX, 30);
   }
 
   void displayInformations(float x_, float y_)
@@ -243,7 +244,7 @@ class FFTObject
       popStyle();
 
       /*AverageLow Ref*/
-      float r0 = map(endAverageLow, 0, endAverageHighs, 0, widthFreq);
+     /* float r0 = map(endAverageLow, 0, endAverageHighs, 0, widthFreq);
       float r1 = map(endAverageMedium-startAverageMedium, 0, endAverageHighs, 0, widthFreq);
       float r2 = map(endAverageHigh-startAverageHigh, 0, endAverageHighs, 0, widthFreq);
       float yGA = y + 5;
@@ -254,7 +255,7 @@ class FFTObject
       fill(0, 255, 0);
       rect(x+r0, yGA, r1, 5);
       fill(0, 0, 255);
-      rect(x+r0+r1, yGA, r2, 5);
+      rect(x+r0+r1, yGA, r2, 5);*/
 
       //debug SpecificAverage
       float lastRectWidth = 0;
@@ -455,6 +456,32 @@ class FFTObject
   {
     return averageHigh;
   }
+  
+  float getAverageSubBass()
+  {
+    return averageSubBass;
+  }
+
+  float getAverageBass()
+  {
+    return averageBass;
+  }
+  
+  float getAverageMidRange()
+  {
+    return averageMidRange;
+  }
+  
+  float getAverageHighMid()
+  {
+    return averageHighMid;
+  }
+  
+  float getAverageHighs()
+  {
+    return averageHighs;
+  }
+
 
   float getFFTLevel(int index)
   {

@@ -24,9 +24,8 @@ void setup()
   smooth(8);
   appParameter();
 
-  int nbBande = 10;
   initMinim("01 - Boards of canada Reach For The Dead.mp3");
-  fftobj = new FFTObject(nbBande, 100);
+  fftobj = new FFTObject(60);
   background(40);
 
 
@@ -41,11 +40,11 @@ void draw()
   {
     fftobj.computeAverageLowMedHighLevel();
 
-    float subLevel = fftobj.averageSubBass;
-    float bassLevel = fftobj.averageBass;
-    float midRangeLevel = fftobj.averageMidRange;
-    float highMidLevel = fftobj.averageHighMid;
-    float highsLevel = fftobj.averageHighs;
+    float subLevel = fftobj.getAverageSubBass();
+    float bassLevel = fftobj.getAverageBass();
+    float midRangeLevel = fftobj.getAverageMidRange();
+    float highMidLevel = fftobj.getAverageHighMid();
+    float highsLevel = fftobj.getAverageHighs();
 
     float subRadius = 60;
     float bassRadius = 120;
