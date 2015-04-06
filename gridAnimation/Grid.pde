@@ -30,6 +30,9 @@ class Grid
   float amplitude;
   float period;
   float dx;
+  
+  //diag
+  float startDiag;
 
   //Array
   ArrayList<Cell> cellList;
@@ -60,6 +63,8 @@ class Grid
     initCell();
 
     //behaviors
+    startDiag = nbRows-1;
+    
     //circle
     circleWidth = 100;
     externalRadius = 0;
@@ -124,9 +129,13 @@ class Grid
     } else if (actualBehavior == 3) {
       behavior03();
     } else if (actualBehavior == 4) {
-      behavior04();
+      animateDiag(0.1);
+      for(int i=0; i<nbCols; i+=4)
+      {
+        behavior04(floor(startDiag)+i);
+      }
     } else if (actualBehavior == 5) {
-      animateCircle(5);
+      animateCircle(8);
       behavior05(centerGrid, externalRadius, internalRadius);
     } else if (actualBehavior == 6) {
       animatePoly();
@@ -189,17 +198,16 @@ class Grid
     }
   }
 
-  void behavior04()
+  void behavior04(int startCol)
   {
-    for (Cell c : cellList)
+    for (int i = 0; i<nbCols; i++)
     {
-      if (c.row == c.col)
+      //int index = (i) + ((i+startCol)*nbRows);
+      
+      int index = (startCol + i) + (i*nbRows);
+      if (index < cellList.size())
       {
-        c.display();
-      }
-      if (c.row > 10  && c.row - ((nbRows-1) - c.col) == nbRows-1)
-      {
-        c.display();
+        cellList.get(index).display();
       }
     }
   }
@@ -279,12 +287,21 @@ class Grid
   }
 
   //Behavior poly
+  void animateDiag(float speed)
+  {
+    startDiag -= speed;
+    if(startDiag < 0)
+    {
+      startDiag = nbRows;
+    }
+  }
+  
   void animateCircle(float speed)
   {
     externalRadius += speed;
     internalRadius = externalRadius - circleWidth;
-    
-    if(externalRadius >= width/2)
+
+    if (externalRadius >= width/2)
     {
       externalRadius = 0;
     }
